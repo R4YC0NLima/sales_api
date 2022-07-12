@@ -1,0 +1,49 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: sale-api
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3333
+    ports:
+      - 3333:3333
+    links:
+      - database
+    depends_on:
+      - database
+    volumes:
+      - .:/usr/src/app
+
+  database:
+    container_name: sale-database
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DB=${PGDATABASE}
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - .:/usr/src/app
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: sale-pg-admin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=rayconlimabatista@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=${PGPASSWORD}
+    ports:
+      - "16543:80"
+    restart: always
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+      - database
+volumes:
+  database-data:
+  pgadmin:
